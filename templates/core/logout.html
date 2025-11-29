@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="text-align: center;">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">You have been logged out</h2>
+        <p style="margin-bottom: 20px;">Thank you for visiting CareConnect.</p>
+        <a href="{% url 'login' %}" class="btn">Login Again</a>
+    </div>
+</div>
+{% endblock %}

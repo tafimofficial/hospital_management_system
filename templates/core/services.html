@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 30px;">Our Services</h1>
+
+    <!-- Search Bar -->
+    <div
+        style="background: var(--white); padding: 20px; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 30px;">
+        <form method="get" action="{% url 'services' %}">
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search services..."
+                    style="flex: 1 1 200px; padding: 12px 20px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                <input type="hidden" name="category" value="{{ category_filter }}">
+                <button type="submit" class="btn" style="padding: 12px 30px; flex: 0 1 auto;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                {% if search_query or category_filter %}
+                <a href="{% url 'services' %}" class="btn"
+                    style="background-color: var(--secondary-color); padding: 12px 20px; flex: 0 1 auto; text-align: center;">
+                    <i class="fas fa-redo"></i> Reset
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Tabs -->
+    <div
+        style="background: var(--white); padding: 15px 20px; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 30px; overflow-x: auto;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <a href="{% url 'services' %}{% if search_query %}?search={{ search_query }}{% endif %}" style="padding: 10px 25px; border-radius: 25px; text-decoration: none; transition: all 0.3s; 
+                      {% if not category_filter %}background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;
+                      {% else %}background: var(--light-bg); color: #333; border: 1px solid #ddd;{% endif %}">
+                <i class="fas fa-th"></i> All Services
+            </a>
+            {% for cat_value, cat_label in categories %}
+            <a href="{% url 'services' %}?category={{ cat_value }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                style="padding: 10px 25px; border-radius: 25px; text-decoration: none; transition: all 0.3s; 
+                      {% if category_filter == cat_value %}background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;
+                      {% else %}background: var(--light-bg); color: #333; border: 1px solid #ddd;{% endif %}">
+                {% if cat_value == 'emergency' %}<i class="fas fa-ambulance"></i>
+                {% elif cat_value == 'consultation' %}<i class="fas fa-user-md"></i>
+                {% elif cat_value == 'diagnostics' %}<i class="fas fa-x-ray"></i>
+                {% elif cat_value == 'laboratory' %}<i class="fas fa-microscope"></i>
+                {% elif cat_value == 'specialized' %}<i class="fas fa-heartbeat"></i>
+                {% else %}<i class="fas fa-hospital"></i>{% endif %}
+                {{ cat_label }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <p style="margin-bottom: 20px; color: #666;">
+        Found <strong>{{ services.count }}</strong> service{% if services.count != 1 %}s{% endif %}
+        {% if category_filter %}in <strong>{{ category_filter|title }}</strong>{% endif %}
+    </p>
+
+    <!-- Services Grid -->
+    {% if services %}
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
+        <!-- Blood Bank Special Card -->
+        <div
+            style="background: #fff5f5; border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; border: 2px solid #e74c3c;">
+            <div style="background: #e74c3c; padding: 30px; text-align: center;">
+                <i class="fas fa-hand-holding-heart fa-4x" style="color: white;"></i>
+            </div>
+            <div style="padding: 25px;">
+                <h3 style="color: #e74c3c; margin: 0 0 10px 0; font-size: 1.4rem;">Blood Bank</h3>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">Check blood availability, donate blood,
+                    or request blood units.</p>
+                <a href="{% url 'blood_bank_home' %}" class="btn"
+                    style="background-color: #e74c3c;color: black; width: 100%; text-align: center; display: block;">
+                    Go to Blood Bank
+                </a>
+            </div>
+        </div>
+
+        {% for service in services %}
+        <div style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow)';">
+
+            <div
+                style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); padding: 30px; text-align: center;">
+                <i class="fas {{ service.icon }} fa-4x" style="color: white;"></i>
+            </div>
+
+            <div style="padding: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                    <h3 style="color: var(--primary-color); margin: 0; font-size: 1.4rem;">{{ service.name }}</h3>
+                    <span
+                        style="background: var(--light-bg); color: var(--secondary-color); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                        {{ service.get_category_display }}
+                    </span>
+                </div>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">{{ service.description }}</p>
+
+                {% if service.contact_number %}
+                <div
+                    style="background: var(--light-bg); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                    <p style="margin: 0; font-weight: 600; color: var(--primary-color);">
+                        <i class="fas fa-phone"></i> Contact:
+                        <a href="tel:{{ service.contact_number }}"
+                            style="color: var(--secondary-color); text-decoration: none;">
+                            {{ service.contact_number }}
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Emergency Banner -->
+    <div
+        style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-top: 40px;">
+        <h2 style="margin: 0 0 15px 0;"><i class="fas fa-exclamation-triangle"></i> Emergency?</h2>
+        <p style="font-size: 1.2rem; margin: 0;">For immediate medical assistance, please contact our ambulance service
+            or visit the nearest emergency department.</p>
+    </div>
+
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <i class="fas fa-search fa-4x" style="color: #ccc; margin-bottom: 20px;"></i>
+        <p style="font-size: 1.2rem; color: #666;">No services found matching your criteria.</p>
+        <a href="{% url 'services' %}" class="btn" style="margin-top: 20px;">View All Services</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

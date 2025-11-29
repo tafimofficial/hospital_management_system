@@ -1,0 +1,217 @@
+<nav class="navbar">
+    <div class="navbar-container">
+
+        <!-- Logo -->
+        <a href="/" class="logo">MySite</a>
+
+        <!-- Desktop Menu -->
+        <ul class="nav-links" id="desktopMenu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/contact/">Contact</a></li>
+        </ul>
+
+        <!-- Notification Icon -->
+        <div class="notification-wrapper">
+            <button id="notifBtn" class="notif-btn">
+                🔔 <span id="notifCount" class="notif-count">0</span>
+            </button>
+
+            <!-- Notification Dropdown -->
+            <div id="notifDropdown" class="notif-dropdown hidden">
+                <div id="notifList" class="notif-list">
+                    <div class="notification-loading">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Icon -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <ul class="mobile-nav-links hidden" id="mobileMenu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+    </ul>
+</nav>
+
+<style>
+    .navbar {
+    background: #ffffff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 20px;
+    position: relative;
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li {
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    font-size: 24px;
+    border: none;
+}
+
+/* Notifications */
+.notification-wrapper {
+    position: relative;
+}
+
+.notif-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    position: relative;
+}
+
+.notif-count {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 5px;
+    border-radius: 50%;
+}
+
+.notif-dropdown {
+    position: absolute;
+    right: 0;
+    top: 35px;
+    width: 280px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.hidden {
+    display: none;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.notification-item.unread {
+    background: #f0f6ff;
+}
+
+.notification-loading {
+    padding: 15px;
+    text-align: center;
+    color: #666;
+}
+
+/* Mobile Menu */
+.mobile-nav-links {
+    display: none;
+    flex-direction: column;
+    padding: 10px 20px;
+    background: #fafafa;
+    border-top: 1px solid #ddd;
+}
+
+.mobile-nav-links li {
+    list-style: none;
+    padding: 10px 0;
+}
+
+/* Show mobile icon only on small screens */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .mobile-nav-links {
+        display: flex;
+    }
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const notifBtn = document.getElementById("notifBtn");
+    const notifDropdown = document.getElementById("notifDropdown");
+    const notifList = document.getElementById("notifList");
+    const notifCount = document.getElementById("notifCount");
+
+    const mobileBtn = document.getElementById("mobileMenuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    // Toggle Mobile Menu
+    mobileBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+    });
+
+    // Toggle Notification Dropdown
+    notifBtn.addEventListener("click", () => {
+        notifDropdown.classList.toggle("hidden");
+        loadNotifications();
+    });
+
+    // Load notifications via fetch
+    function loadNotifications() {
+        notifList.innerHTML = `<div class="notification-loading">Loading...</div>`;
+
+        fetch("/notifications/api/")
+            .then(res => res.json())
+            .then(data => {
+                notifCount.textContent = data.unread;
+
+                if (data.items.length === 0) {
+                    notifList.innerHTML = `<div class="notification-loading">No notifications</div>`;
+                    return;
+                }
+
+                notifList.innerHTML = data.items.map(notification => `
+                    <div class="notification-item ${notification.is_read ? "" : "unread"}"
+                         data-link="${notification.link}">
+                        <strong>${notification.title}</strong><br>
+                        <small>${notification.time}</small>
+                    </div>
+                `).join("");
+
+                // Click to open notification
+                document.querySelectorAll(".notification-item").forEach(item => {
+                    item.addEventListener("click", () => {
+                        window.location.href = item.dataset.link;
+                    });
+                });
+            });
+    }
+
+});
+</script>

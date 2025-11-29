@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Patient Registration</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="color: grey;">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <button type="submit">Register</button>
+            </div>
+        </form>
+        <p style="text-align: center; margin-top: 10px;">Already have an account? <a href="{% url 'login' %}"
+                style="color: var(--primary-color);">Login here</a></p>
+    </div>
+</div>
+{% endblock %}

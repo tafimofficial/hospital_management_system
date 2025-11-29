@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Add New Service</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="color: grey;">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <button type="submit" class="btn"><i class="fas fa-save"></i> Save Service</button>
+                <a href="{% url 'manage_services' %}" class="btn" style="background-color: var(--secondary-color);">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+
+        <div style="margin-top: 30px; padding: 20px; background: var(--light-bg); border-radius: 8px;">
+            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Icon Reference:</h4>
+            <p style="margin-bottom: 10px; color: #666;">Use FontAwesome icons from: <a
+                    href="https://fontawesome.com/icons" target="_blank">fontawesome.com/icons</a></p>
+            <p style="margin: 5px 0;"><i class="fas fa-ambulance"></i> <code>fa-ambulance</code> - Ambulance</p>
+            <p style="margin: 5px 0;"><i class="fas fa-stethoscope"></i> <code>fa-stethoscope</code> - General Medicine
+            </p>
+            <p style="margin: 5px 0;"><i class="fas fa-heartbeat"></i> <code>fa-heartbeat</code> - Cardiology</p>
+            <p style="margin: 5px 0;"><i class="fas fa-user-md"></i> <code>fa-user-md</code> - Doctor Consultation</p>
+            <p style="margin: 5px 0;"><i class="fas fa-x-ray"></i> <code>fa-x-ray</code> - X-Ray/Imaging</p>
+            <p style="margin: 5px 0;"><i class="fas fa-microscope"></i> <code>fa-microscope</code> - Laboratory</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

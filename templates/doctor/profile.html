@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 800px;">
+        <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);">My Profile</h2>
+
+        <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+            <div style="flex: 1; text-align: center;">
+                {% if user.doctor_profile.profile_pic %}
+                <img src="{{ user.doctor_profile.profile_pic.url }}" alt="Profile Picture"
+                    style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; box-shadow: var(--shadow); border: 4px solid var(--white);">
+                {% else %}
+                <div
+                    style="width: 200px; height: 200px; border-radius: 50%; background-color: #ddd; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: var(--shadow); border: 4px solid var(--white);">
+                    <i class="fas fa-user-md fa-5x" style="color: #aaa;"></i>
+                </div>
+                {% endif %}
+                <div style="margin-top: 15px;">
+                    <span
+                        style="padding: 5px 15px; background-color: #d4edda; color: #155724; border-radius: 20px; font-size: 0.9rem;">
+                        {{ user.doctor_profile.status|title }}
+                    </span>
+                </div>
+            </div>
+
+            <div style="flex: 2;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 10px;">
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Username:</strong> {{ user.username }}
+                    </p>
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Email:</strong> {{ user.email }}</p>
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Specialization:</strong> {{ user.doctor_profile.specialization }}</p>
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Phone:</strong> {{ user.doctor_profile.phone_number }}</p>
+                    <p style="margin-bottom: 15px; font-size: 1.1rem;"><strong>Address:</strong> {{ user.doctor_profile.address }}</p>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 15px;">
+                    <a href="{% url 'edit_doctor_profile' %}" class="btn"><i class="fas fa-edit"></i> Edit Profile</a>
+                    <a href="{% url 'doctor_dashboard' %}" class="btn"
+                        style="background-color: var(--secondary-color);"><i class="fas fa-arrow-left"></i> Back to
+                        Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <div class="form-container" style="max-width: 600px;">
+        <h2 style="text-align: center; color: #e74c3c; margin-bottom: 30px;"><i class="fas fa-hand-holding-heart"></i>
+            Register as Blood Donor</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" required placeholder="Enter your full name"
+                    value="{{ user.get_full_name }}">
+            </div>
+
+            <div class="form-group">
+                <label>Blood Group</label>
+                <select name="blood_group" required>
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input type="tel" name="contact_number" required placeholder="Enter your phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Last Donation Date (Optional)</label>
+                <input type="date" name="last_donation_date">
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="is_anonymous" id="anon" style="width: auto;">
+                <label for="anon" style="margin: 0;">Donate Anonymously (Hide my name from public lists)</label>
+            </div>
+
+            <button type="submit" class="btn" style="background-color: #e74c3c; width: 100%;">Register as Donor</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

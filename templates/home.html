@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section
+    style="background: linear-gradient(135deg, rgba(52, 152, 219, 0.95), rgba(41, 128, 185, 0.95)), url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1200') center/cover; color: white; padding: 100px 20px; text-align: center;">
+    <div class="container">
+        <h1 style="font-size: 3rem; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            <i class="fas fa-heartbeat"></i> Welcome to CareConnect
+        </h1>
+        <p
+            style="font-size: 1.5rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+            Your trusted partner in healthcare. Providing quality medical services with compassion and excellence.
+        </p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'find_doctors' %}" class="btn"
+                style="font-size: 1.1rem; padding: 15px 40px; background: white; color: var(--primary-color); min-width: 200px;">
+                <i class="fas fa-user-md"></i> Find Doctors
+            </a>
+            <a href="{% url 'services' %}" class="btn"
+                style="font-size: 1.1rem; padding: 15px 40px; background:#030904; min-width: 200px;">
+                <i class="fas fa-hospital"></i> Our Services
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Blood Bank Highlight -->
+<section style="background: #fff5f5; padding: 80px 20px; text-align: center;">
+    <div class="container">
+        <h2 style="color: #e74c3c; font-size: 2.5rem; margin-bottom: 20px;">
+            <i class="fas fa-tint"></i> Blood Bank Services
+        </h2>
+        <p
+            style="font-size: 1.2rem; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; color: #555;">
+            Every drop counts. Join our community of life-savers or find blood when you need it most.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+            <div
+                style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 280px; max-width: 400px; border-top: 5px solid #e74c3c;">
+                <i class="fas fa-hand-holding-heart fa-3x" style="color: #e74c3c; margin-bottom: 20px;"></i>
+                <h3 style="margin-bottom: 15px; color: #333;">Donate Blood</h3>
+                <p style="color: #666; margin-bottom: 20px;">Register as a donor and help save lives. You can choose to
+                    remain anonymous.</p>
+                <a href="{% url 'register_donor' %}" class="btn" style="background-color: #e74c3c;color: black; width: 100%;">Become
+                    a Donor</a>
+            </div>
+
+            <div
+                style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); flex: 1; min-width: 280px; max-width: 400px; border-top: 5px solid var(--primary-color);">
+                <i class="fas fa-search-plus fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="margin-bottom: 15px; color: #333;">Find Blood</h3>
+                <p style="color: #666; margin-bottom: 20px;">Check real-time blood availability and request blood units
+                    instantly.</p>
+                <a href="{% url 'blood_bank_home' %}" class="btn" style="width: 100%;">Check Availability</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section style="background: var(--white); padding: 60px 20px;">
+    <div class="container">
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 30px; text-align: center;">
+            <div>
+                <div
+                    style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem;">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h3 style="color: var(--primary-color); font-size: 2.5rem; margin: 10px 0;">50+</h3>
+                <p style="color: #666; font-size: 1.1rem;">Expert Doctors</p>
+            </div>
+            <div>
+                <div
+                    style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 style="color: var(--primary-color); font-size: 2.5rem; margin: 10px 0;">10K+</h3>
+                <p style="color: #666; font-size: 1.1rem;">Happy Patients</p>
+            </div>
+            <div>
+                <div
+                    style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem;">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3 style="color: var(--primary-color); font-size: 2.5rem; margin: 10px 0;">15+</h3>
+                <p style="color: #666; font-size: 1.1rem;">Years Experience</p>
+            </div>
+            <div>
+                <div
+                    style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 style="color: var(--primary-color); font-size: 2.5rem; margin: 10px 0;">24/7</h3>
+                <p style="color: #666; font-size: 1.1rem;">Emergency Care</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section style="background: var(--light-bg); padding: 80px 20px;">
+    <div class="container">
+        <h2 style="text-align: center; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 50px;">
+            Why Choose CareConnect?
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-stethoscope fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Expert Medical Team</h3>
+                <p style="color: #666; line-height: 1.6;">Our board-certified physicians and specialists provide
+                    top-quality care with years of experience.</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-hospital-alt fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Modern Facilities</h3>
+                <p style="color: #666; line-height: 1.6;">State-of-the-art equipment and comfortable facilities for the
+                    best patient experience.</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-heartbeat fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Compassionate Care</h3>
+                <p style="color: #666; line-height: 1.6;">We treat every patient with dignity, respect, and personalized
+                    attention to their needs.</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-ambulance fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Emergency Services</h3>
+                <p style="color: #666; line-height: 1.6;">24/7 emergency care with rapid response ambulance services
+                    available anytime.</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-shield-alt fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Safety Standards</h3>
+                <p style="color: #666; line-height: 1.6;">We maintain the highest safety and hygiene standards for
+                    patient protection.</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s;"
+                onmouseover="this.style.transform='translateY(-10px)'"
+                onmouseout="this.style.transform='translateY(0)'">
+                <i class="fas fa-wallet fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Affordable Pricing</h3>
+                <p style="color: #666; line-height: 1.6;">Quality healthcare at reasonable prices with various payment
+                    options available.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview -->
+<section style="background: white; padding: 80px 20px;">
+    <div class="container">
+        <h2 style="text-align: center; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 20px;">
+            Our Medical Services
+        </h2>
+        <p
+            style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 50px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            Comprehensive healthcare services tailored to meet all your medical needs
+        </p>
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
+            <div
+                style="background: var(--light-bg); padding: 25px; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                <h4 style="color: var(--primary-color); margin-bottom: 10px;"><i class="fas fa-ambulance"></i> Emergency
+                    Care</h4>
+                <p style="color: #666; line-height: 1.6;">24/7 emergency medical services with expert trauma care</p>
+            </div>
+            <div
+                style="background: var(--light-bg); padding: 25px; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                <h4 style="color: var(--primary-color); margin-bottom: 10px;"><i class="fas fa-user-md"></i> General
+                    Medicine</h4>
+                <p style="color: #666; line-height: 1.6;">Comprehensive health checkups and consultations</p>
+            </div>
+            <div
+                style="background: var(--light-bg); padding: 25px; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                <h4 style="color: var(--primary-color); margin-bottom: 10px;"><i class="fas fa-x-ray"></i> Diagnostics
+                </h4>
+                <p style="color: #666; line-height: 1.6;">Advanced imaging and diagnostic services</p>
+            </div>
+            <div
+                style="background: var(--light-bg); padding: 25px; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                <h4 style="color: var(--primary-color); margin-bottom: 10px;"><i class="fas fa-microscope"></i>
+                    Laboratory</h4>
+                <p style="color: #666; line-height: 1.6;">State-of-the-art lab testing facilities</p>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <a href="{% url 'services' %}" class="btn" style="padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-list"></i> View All Services
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section
+    style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 80px 20px; text-align: center;">
+    <div class="container">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Ready to Get Started?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Join thousands of satisfied patients who trust us with their healthcare needs
+        </p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'register_patient' %}" class="btn"
+                style="background: white; color: var(--primary-color); padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-user-plus"></i> Register as Patient
+            </a>
+            <a href="{% url 'register_doctor' %}" class="btn"
+                style="background: transparent; color: white; border: 2px solid white; padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-user-md"></i> Join as Doctor
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Badges -->
+<section style="background: var(--light-bg); padding: 50px 20px;">
+    <div class="container">
+        <div
+            style="display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap; opacity: 0.7;">
+            <div style="text-align: center;">
+                <i class="fas fa-certificate fa-3x" style="color: var(--primary-color);"></i>
+                <p style="margin-top: 10px; color: #666; font-weight: 600;">Certified Healthcare</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-shield-alt fa-3x" style="color: var(--primary-color);"></i>
+                <p style="margin-top: 10px; color: #666; font-weight: 600;">Secure & Safe</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-star fa-3x" style="color: var(--primary-color);"></i>
+                <p style="margin-top: 10px; color: #666; font-weight: 600;">Top Rated</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-award fa-3x" style="color: var(--primary-color);"></i>
+                <p style="margin-top: 10px; color: #666; font-weight: 600;">Award Winning</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

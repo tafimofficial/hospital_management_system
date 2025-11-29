@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 30px;">Find Our Doctors</h1>
+
+    <!-- Search and Filter Section -->
+    <div
+        style="background: var(--white); padding: 25px; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 30px;">
+        <form method="get" action="{% url 'find_doctors' %}">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1 1 300px;">
+                    <label for="search" style="display: block; margin-bottom: 8px; font-weight: 500;">Search
+                        Doctors</label>
+                    <input type="text" id="search" name="search" value="{{ search_query }}"
+                        placeholder="Search by name or specialization..."
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                </div>
+
+                <div style="flex: 1 1 200px;">
+                    <label for="specialization" style="display: block; margin-bottom: 8px; font-weight: 500;">Filter by
+                        Specialization</label>
+                    <select id="specialization" name="specialization"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                        <option value="">All Specializations</option>{% for spec in specializations %}<option value="{{ spec }}" {% if spec == specialization_filter %}selected{% endif %}>{{ spec }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 10px; flex: 1 1 auto; justify-content: flex-end;">
+                    <button type="submit" class="btn" style="padding: 12px 30px; flex: 1;">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <a href="{% url 'find_doctors' %}" class="btn"
+                        style="background-color: var(--secondary-color); padding: 12px 20px; flex: 1; text-align: center;">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Count -->
+    <p style="margin-bottom: 20px; color: #666;">Found <strong>{{ doctors.count }}</strong> doctor{% if doctors.count != 1 %}s{% endif %}</p>
+
+    <!-- Doctors Grid -->
+    {% if doctors %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
+        {% for doctor in doctors %}
+        <div style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow)';">
+
+            <div style="text-align: center; padding: 25px 20px 15px;">
+                {% if doctor.profile_pic %}
+                <img src="{{ doctor.profile_pic.url }}" alt="Dr. {{ doctor.user.get_full_name }}"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-color);">
+                {% else %}
+                <div
+                    style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); 
+                            display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 4px solid var(--primary-color);">
+                    <i class="fas fa-user-md fa-3x" style="color: white;"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="padding: 0 20px 20px;">
+                <h3 style="text-align: center; color: var(--primary-color); margin-bottom: 8px;">Dr. {{doctor.user.get_full_name|default:doctor.user.username }}</h3>
+                <p style="text-align: center; color: var(--secondary-color); font-weight: 500; margin-bottom: 15px;"><i
+                        class="fas fa-stethoscope"></i> {{ doctor.specialization }}</p>
+
+                <div style="padding: 15px; background: var(--light-bg); border-radius: 8px; margin-bottom: 15px;">
+                    <p style="font-size: 0.9rem; margin: 5px 0;"><i class="fas fa-envelope" style="width: 20px;"></i>
+                        {{doctor.user.email }}</p>
+                    <p style="font-size: 0.9rem; margin: 5px 0;"><i class="fas fa-phone" style="width: 20px;"></i>
+                        {{doctor.phone_number }}</p>
+                </div>
+
+                <a href="{% url 'doctor_detail' doctor.id %}" class="btn"
+                    style="width: 100%; text-align: center; display: block;">
+                    <i class="fas fa-info-circle"></i> View Full Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <i class="fas fa-user-md fa-4x" style="color: #ccc; margin-bottom: 20px;"></i>
+        <p style="font-size: 1.2rem; color: #666;">No doctors found matching your criteria.</p>
+        <a href="{% url 'find_doctors' %}" class="btn" style="margin-top: 20px;">View All Doctors</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

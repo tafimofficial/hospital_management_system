@@ -1,0 +1,585 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 20px 15px;">
+    <div class="header-section">
+        <h1 class="page-title">
+            <i class="fas fa-tint"></i> Blood Bank Admin
+        </h1>
+        <div class="header-actions">
+            <a href="{% url 'admin_dashboard' %}" class="btn back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Inventory Management -->
+    <div class="inventory-section">
+        <h2 class="section-title">
+            <i class="fas fa-boxes"></i> Inventory Status
+        </h2>
+        <div class="inventory-grid">
+            {% for item in inventory %}
+            <div class="blood-group-card">
+                <h3 class="blood-group">{{ item.blood_group }}</h3>
+                <form method="post" action="{% url 'update_blood_inventory' item.id %}">
+                    {% csrf_token %}
+                    <div class="inventory-controls">
+                        <input type="number" name="bags" value="{{ item.bags_available }}" min="0" class="bags-input">
+                        <button type="submit" class="btn save-btn">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
+                </form>
+                <p class="bags-label">Bags Available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="management-grid">
+        <!-- Pending Donors -->
+        
+
+        <!-- Blood Requests -->
+        <div class="management-section">
+            <h2 class="section-title">
+                <i class="fas fa-procedures"></i> Recent Requests
+            </h2>
+            {% if requests %}
+            <div class="table-container">
+                <!-- Desktop Table -->
+                <table class="desktop-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Group</th>
+                            <th>Units</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                        <tr>
+                            <td>{{ req.patient_name }}</td>
+                            <td>
+                                <span class="blood-group-badge request-badge">
+                                    {{ req.blood_group }}
+                                </span>
+                            </td>
+                            <td>{{ req.units_needed }}</td>
+                            <td>
+                                <span class="status-badge status-{{ req.status }}">
+                                    {% if req.status == 'pending' %}Pending
+                                    {% elif req.status == 'approved' %}Approved
+                                    {% elif req.status == 'rejected' %}Rejected
+                                    {% else %}Fulfilled
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if req.status == 'pending' %}
+                                <form method="post" action="{% url 'manage_blood_request' req.id %}" class="action-form">
+                                    {% csrf_token %}
+                                    <button type="submit" name="action" value="approve" title="Approve" class="action-btn approve-btn">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                    <button type="submit" name="action" value="reject" title="Reject" class="action-btn reject-btn">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="no-action">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Mobile Cards -->
+                <div class="mobile-cards">
+                    {% for req in requests %}
+                    <div class="request-card">
+                        <div class="card-header">
+                            <h4 class="patient-name">{{ req.patient_name }}</h4>
+                            <span class="blood-group-badge request-badge">
+                                {{ req.blood_group }}
+                            </span>
+                        </div>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Units Needed:</span>
+                                <span class="detail-value">{{ req.units_needed }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status:</span>
+                                <span class="status-badge status-{{ req.status }}">
+                                    {% if req.status == 'pending' %}Pending
+                                    {% elif req.status == 'approved' %}Approved
+                                    {% elif req.status == 'rejected' %}Rejected
+                                    {% else %}Fulfilled
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% if req.status == 'pending' %}
+                        <div class="card-actions">
+                            <form method="post" action="{% url 'manage_blood_request' req.id %}" class="action-form">
+                                {% csrf_token %}
+                                <button type="submit" name="action" value="approve" class="btn mobile-approve-btn">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button type="submit" name="action" value="reject" class="btn mobile-reject-btn">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No blood requests found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base Styles */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 15px;
+    }
+
+    /* Header Section */
+    .header-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        color: var(--primary-color);
+        margin: 0;
+        text-align: center;
+        font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .header-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    .back-btn {
+        background: #82e479;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: #6cd063;
+        transform: translateY(-2px);
+    }
+
+    /* Section Styles */
+    .inventory-section,
+    .management-section {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        margin-bottom: 25px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .section-title {
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+    }
+
+    /* Inventory Grid */
+    .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .blood-group-card {
+        text-align: center;
+        border: 1px solid #eee;
+        padding: 15px;
+        border-radius: 12px;
+        background: #fff5f5;
+        transition: transform 0.3s ease;
+    }
+
+    .blood-group-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .blood-group {
+        color: #e74c3c;
+        margin-bottom: 8px;
+        font-size: clamp(1.4rem, 3vw, 1.8rem);
+    }
+
+    .inventory-controls {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .bags-input {
+        width: 70px;
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .save-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        background: #020101;
+        min-width: 40px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .save-btn:hover {
+        background: #333;
+    }
+
+    .bags-label {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    /* Management Grid */
+    .management-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    /* Table Styles */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .desktop-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .desktop-table th {
+        background: var(--light-bg);
+        padding: 12px 8px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .desktop-table td {
+        padding: 12px 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Badge Styles */
+    .blood-group-badge {
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+
+    .donor-badge {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .request-badge {
+        background: #ffebee;
+        color: #e74c3c;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .status-fulfilled { background: #d1ecf1; color: #0c5460; }
+
+    /* Action Buttons */
+    .action-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 8px;
+        transition: transform 0.2s;
+        border-radius: 50%;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.2);
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .approve-btn { color: #2ecc71; }
+    .reject-btn { color: #e74c3c; }
+
+    .no-action {
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Mobile Cards */
+    .mobile-cards {
+        display: none;
+    }
+
+    .donor-card,
+    .request-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s ease;
+    }
+
+    .donor-card:hover,
+    .request-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .donor-name,
+    .patient-name {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .card-details {
+        margin-bottom: 15px;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px 0;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #555;
+        font-size: 0.9rem;
+    }
+
+    .detail-value {
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .mobile-approve-btn,
+    .mobile-reject-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .mobile-approve-btn {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .mobile-approve-btn:hover {
+        background: #c3e6cb;
+        transform: translateY(-1px);
+    }
+
+    .mobile-reject-btn {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .mobile-reject-btn:hover {
+        background: #f5c6cb;
+        transform: translateY(-1px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: #bdc3c7;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (min-width: 768px) {
+        .container {
+            padding: 30px 20px;
+        }
+
+        .header-section {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            text-align: left;
+        }
+
+        .management-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .inventory-section,
+        .management-section {
+            padding: 25px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .container {
+            padding: 40px;
+        }
+
+        .inventory-section,
+        .management-section {
+            padding: 30px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .desktop-table {
+            display: none;
+        }
+
+        .mobile-cards {
+            display: block;
+        }
+
+        .inventory-grid {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .blood-group-card {
+            padding: 12px;
+        }
+
+        button, .btn, input {
+            min-height: 44px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 15px 10px;
+        }
+
+        .inventory-section,
+        .management-section {
+            padding: 15px;
+        }
+
+        .card-header {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+    }
+</style>
+{% endblock %}

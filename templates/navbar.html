@@ -1,0 +1,1120 @@
+<nav class="navbar">
+    <div class="container">
+        <a href="{% url 'home' %}" class="logo">
+            <i class="fas fa-heartbeat"></i> CareConnect
+        </a>
+
+        <ul class="nav-links">
+            {% if not user.is_authenticated %}
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'find_doctors' %}">Doctors</a></li>
+            <li><a href="{% url 'services' %}">Services</a></li>
+            <li>
+                <a href="{% url 'blood_bank_home' %}" class="blood-bank-link">
+                    <i class="fas fa-tint"></i> Blood Bank
+                </a>
+            </li>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            {% if user.is_patient %}
+            <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'book_appointment' %}">Book Appointment</a></li>
+            <li>
+                <a href="{% url 'request_blood' %}" class="blood-bank-link">
+                    <i class="fas fa-tint"></i> Request Blood
+                </a>
+            </li>
+            {% elif user.is_doctor %}
+            <li><a href="{% url 'doctor_dashboard' %}">Dashboard</a></li>
+            {% elif user.is_superuser %}
+            <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+            {% endif %}
+
+            <!-- Enhanced Notification System -->
+            <li class="notification-container" id="notificationContainer">
+                <button class="notification-trigger" id="notificationTrigger">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+                <div class="notification-panel" id="notificationPanel">
+                    <div class="notification-header">
+                        <h4>
+                            <i class="fas fa-bell"></i>
+                            Notifications
+                        </h4>
+                        <div class="notification-actions">
+                            <button class="mark-all-read" id="markAllRead">
+                                <i class="fas fa-check-double"></i>
+                                Mark all read
+                            </button>
+                            <button class="close-notifications" id="closeNotifications">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-list" id="notificationList">
+                            <!-- Notifications will be loaded here -->
+                            <div class="notification-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading notifications...</p>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="{% url 'all_notifications' %}" class="view-all-link">
+                                <i class="fas fa-list"></i>
+                                View All Notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <!-- User Dropdown -->
+            <li class="user-dropdown">
+                <button class="user-trigger" id="userTrigger">
+                    <span class="user-avatar">
+                        {% if user.patient_profile.profile_pic %}
+                        <img src="{{ user.patient_profile.profile_pic.url }}" alt="{{ user.username }}">
+                        {% elif user.doctor_profile.profile_pic %}
+                        <img src="{{ user.doctor_profile.profile_pic.url }}" alt="{{ user.username }}">
+                        {% else %}
+                        <i class="fas fa-user"></i>
+                        {% endif %}
+                    </span>
+                    <span class="username">{{ user.username }}</span>
+                    <i class="fas fa-caret-down"></i>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <small>{{ user.email }}</small>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    {% if user.is_patient %}
+                    <a href="{% url 'patient_profile' %}" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i>
+                        My Profile
+                    </a>
+                    {% elif user.is_doctor %}
+                    <a href="{% url 'doctor_profile' %}" class="dropdown-item">
+                        <i class="fas fa-user-md"></i>
+                        My Profile
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'change_password' %}" class="dropdown-item">
+                        <i class="fas fa-key"></i>
+                        Change Password
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <form action="{% url 'logout' %}" method="post" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </li>
+            {% else %}
+            <!-- Guest Navigation -->
+            <li><a href="{% url 'login' %}" class="login-btn">Login</a></li>
+            <li class="register-dropdown">
+                <button class="register-trigger">
+                    Register <i class="fas fa-caret-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{% url 'register_patient' %}" class="dropdown-item">
+                        <i class="fas fa-user-injured"></i>
+                        As Patient
+                    </a>
+                    <a href="{% url 'register_doctor' %}" class="dropdown-item">
+                        <i class="fas fa-user-md"></i>
+                        As Doctor
+                    </a>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay">
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-header">
+                <span class="mobile-logo">
+                    <i class="fas fa-heartbeat"></i> CareConnect
+                </span>
+                <button class="close-mobile-menu" id="closeMobileMenu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-links">
+                <!-- Mobile navigation links will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Base Navbar Styles */
+    .navbar {
+        background: var(--white);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    .navbar .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+    }
+
+    /* Logo */
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+        transform: scale(1.05);
+        text-decoration: none;
+        color: var(--primary-color);
+    }
+
+    /* Navigation Links */
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-links li {
+        position: relative;
+    }
+
+    .nav-links a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-links a:hover {
+        background: var(--light-bg);
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    /* Blood Bank Links */
+    .blood-bank-link {
+        color: #e74c3c !important;
+        font-weight: 600;
+    }
+
+    .blood-bank-link:hover {
+        background: #ffeaea !important;
+        color: #c0392b !important;
+    }
+
+    /* Notification System */
+    .notification-container {
+        position: relative;
+    }
+
+    .notification-trigger {
+        background: none;
+        border: none;
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+    }
+
+    .notification-trigger:hover {
+        background: var(--light-bg);
+        color: var(--primary-color);
+        transform: scale(1.1);
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .notification-panel {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 380px;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e9ecef;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1001;
+    }
+
+    .notification-panel.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(10px);
+    }
+
+    .notification-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .notification-header h4 {
+        margin: 0;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+    }
+
+    .notification-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mark-all-read,
+    .close-notifications {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .mark-all-read:hover {
+        color: var(--primary-color);
+        background: #e3f2fd;
+    }
+
+    .close-notifications:hover {
+        color: #e74c3c;
+        background: #ffeaea;
+    }
+
+    .notification-content {
+        max-height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .notification-list {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 300px;
+    }
+
+    .notification-loading {
+        padding: 40px 20px;
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .notification-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f3f4;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: flex;
+        gap: 12px;
+    }
+
+    .notification-item:hover {
+        background: #f8f9fa;
+    }
+
+    .notification-item.unread {
+        background: #f0f7ff;
+        border-left: 3px solid var(--primary-color);
+    }
+
+    .notification-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+
+    .notification-details {
+        flex: 1;
+    }
+
+    .notification-text {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .notification-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .notification-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e9ecef;
+        text-align: center;
+    }
+
+    .view-all-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: color 0.3s ease;
+    }
+
+    .view-all-link:hover {
+        color: #2980b9;
+        text-decoration: none;
+    }
+
+    /* User Dropdown */
+    .user-dropdown {
+        position: relative;
+    }
+
+    .user-trigger {
+        background: none;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .user-trigger:hover {
+        background: var(--light-bg);
+    }
+
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        overflow: hidden;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 250px;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e9ecef;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1001;
+    }
+
+    .dropdown-menu.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(10px);
+    }
+
+    .dropdown-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .dropdown-header strong {
+        display: block;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .dropdown-header small {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: #e9ecef;
+        margin: 5px 0;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .logout-form {
+        margin: 0;
+    }
+
+    .logout-btn {
+        color: #e74c3c !important;
+    }
+
+    .logout-btn:hover {
+        background: #ffeaea !important;
+        color: #c0392b !important;
+    }
+
+    /* Register Dropdown */
+    .register-dropdown {
+        position: relative;
+    }
+
+    .register-trigger {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    .register-trigger:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    /* Login Button */
+    .login-btn {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 8px 20px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .login-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-btn {
+        display: none;
+        flex-direction: column;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        gap: 4px;
+    }
+
+    .bar {
+        width: 25px;
+        height: 3px;
+        background: var(--text-color);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 300px;
+        height: 100vh;
+        background: var(--white);
+        transition: right 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-overlay.active .mobile-menu {
+        right: 0;
+    }
+
+    .mobile-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mobile-logo {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .close-mobile-menu {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .mobile-nav-links {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .mobile-nav-links a {
+        display: block;
+        padding: 15px;
+        color: var(--text-color);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-nav-links a:hover {
+        background: var(--light-bg);
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 968px) {
+        .nav-links {
+            display: none;
+        }
+
+        .mobile-menu-btn {
+            display: flex;
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            border-radius: 0;
+            max-height: calc(100vh - 70px);
+        }
+
+        .dropdown-menu {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            border-radius: 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar .container {
+            padding: 0 15px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+        }
+
+        .mobile-menu {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Notification System
+        const notificationTrigger = document.getElementById('notificationTrigger');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+        const markAllRead = document.getElementById('markAllRead');
+        const notificationList = document.getElementById('notificationList');
+        const notificationBadge = document.getElementById('notificationBadge');
+
+        // User Dropdown
+        const userTrigger = document.getElementById('userTrigger');
+        const userDropdown = document.getElementById('userDropdown');
+
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileNavLinks = document.querySelector('.mobile-nav-links');
+
+        // Toggle Notification Panel (only for logged-in users)
+        if (notificationTrigger && notificationPanel) {
+            notificationTrigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                notificationPanel.classList.toggle('active');
+                if (userDropdown) userDropdown.classList.remove('active');
+                if (registerDropdown) registerDropdown.classList.remove('active');
+                loadNotifications();
+            });
+        }
+
+        // Toggle User Dropdown (only for logged-in users)
+        if (userTrigger && userDropdown) {
+            userTrigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+                if (notificationPanel) notificationPanel.classList.remove('active');
+                if (registerDropdown) registerDropdown.classList.remove('active');
+            });
+        }
+
+        // Toggle Register Dropdown (for guest users)
+        const registerTrigger = document.querySelector('.register-trigger');
+        const registerDropdown = document.querySelector('.register-dropdown .dropdown-menu');
+
+        if (registerTrigger && registerDropdown) {
+            registerTrigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                registerDropdown.classList.toggle('active');
+                // Close other dropdowns if they exist
+                if (notificationPanel) notificationPanel.classList.remove('active');
+                if (userDropdown) userDropdown.classList.remove('active');
+            });
+
+            // Prevent dropdown close when clicking inside
+            registerDropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function () {
+            if (notificationPanel) notificationPanel.classList.remove('active');
+            if (userDropdown) userDropdown.classList.remove('active');
+            if (registerDropdown) registerDropdown.classList.remove('active');
+        });
+
+        // Prevent dropdown close when clicking inside
+        if (notificationPanel) {
+            notificationPanel.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Close notifications button
+        if (closeNotifications) {
+            closeNotifications.addEventListener('click', function () {
+                notificationPanel.classList.remove('active');
+            });
+        }
+
+        // Mark all as read
+        if (markAllRead) {
+            markAllRead.addEventListener('click', function () {
+                // Implement mark all as read functionality
+                const unreadItems = notificationList.querySelectorAll('.notification-item.unread');
+                unreadItems.forEach(item => {
+                    item.classList.remove('unread');
+                });
+                updateNotificationBadge(0);
+                // Here you would typically make an API call to mark all as read
+            });
+        }
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', function () {
+            mobileOverlay.classList.add('active');
+            populateMobileMenu();
+        });
+
+        closeMobileMenu.addEventListener('click', function () {
+            mobileOverlay.classList.remove('active');
+        });
+
+        mobileOverlay.addEventListener('click', function (e) {
+            if (e.target === mobileOverlay) {
+                mobileOverlay.classList.remove('active');
+            }
+        });
+
+        // Populate mobile menu with navigation links
+        function populateMobileMenu() {
+            const desktopLinks = document.querySelector('.nav-links').innerHTML;
+            mobileNavLinks.innerHTML = desktopLinks;
+
+            // Add click handlers for mobile dropdowns
+            const mobileDropdowns = mobileNavLinks.querySelectorAll('.user-dropdown, .register-dropdown');
+            mobileDropdowns.forEach(dropdown => {
+                const trigger = dropdown.querySelector('button');
+                const menu = dropdown.querySelector('.dropdown-menu');
+
+                if (trigger && menu) {
+                    trigger.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        menu.classList.toggle('active');
+                    });
+                }
+            });
+
+            // Handle mobile notification panel
+            const mobileNotificationTrigger = mobileNavLinks.querySelector('#notificationTrigger');
+            const mobileNotificationPanel = mobileNavLinks.querySelector('#notificationPanel');
+            const mobileCloseNotifications = mobileNavLinks.querySelector('#closeNotifications');
+            const mobileMarkAllRead = mobileNavLinks.querySelector('#markAllRead');
+
+            if (mobileNotificationTrigger && mobileNotificationPanel) {
+                // Remove desktop IDs to avoid conflicts
+                mobileNotificationTrigger.removeAttribute('id');
+                mobileNotificationPanel.removeAttribute('id');
+                if (mobileCloseNotifications) mobileCloseNotifications.removeAttribute('id');
+                if (mobileMarkAllRead) mobileMarkAllRead.removeAttribute('id');
+
+                // Add mobile notification trigger
+                mobileNotificationTrigger.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    mobileNotificationPanel.classList.toggle('active');
+                    loadNotifications(); // Load notifications when opened
+                });
+
+                // Close button
+                if (mobileCloseNotifications) {
+                    mobileCloseNotifications.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        mobileNotificationPanel.classList.remove('active');
+                    });
+                }
+
+                // Mark all as read
+                if (mobileMarkAllRead) {
+                    mobileMarkAllRead.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        fetch('/api/notifications/mark-all-read/', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    loadNotifications();
+                                }
+                            })
+                            .catch(error => console.error('Error marking all as read:', error));
+                    });
+                }
+
+                // Prevent panel close when clicking inside
+                mobileNotificationPanel.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        // Get notification icon based on type
+        function getNotificationIcon(type) {
+            const icons = {
+                'blood_request': 'tint',
+                'appointment': 'calendar-check',
+                'doctor_approval': 'user-md',
+                'general': 'info-circle'
+            };
+            return icons[type] || 'bell';
+        }
+
+        // Load notifications from API
+        function loadNotifications() {
+            fetch('/api/notifications/')
+                .then(response => response.json())
+                .then(data => {
+                    displayNotifications(data.notifications);
+                    updateNotificationBadge(data.unread_count);
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    // Update all notification lists with error message
+                    document.querySelectorAll('.notification-list').forEach(list => {
+                        list.innerHTML = `
+                            <div class="notification-loading">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error loading notifications</p>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        function displayNotifications(notifications) {
+            // Get all notification lists (desktop and mobile)
+            const allNotificationLists = document.querySelectorAll('.notification-list');
+
+            const notificationHTML = notifications.length === 0 ? `
+                <div class="notification-loading">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>No notifications</p>
+                </div>
+            ` : notifications.map(notification => `
+                <div class="notification-item ${!notification.is_read ? 'unread' : ''}" 
+                     data-id="${notification.id}" 
+                     data-link="${notification.link}"
+                     style="cursor: pointer;">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-details">
+                        <p class="notification-text"><strong>${notification.title}</strong><br>${notification.message}</p>
+                        <span class="notification-time">${notification.created_at}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update all notification lists (desktop and mobile)
+            allNotificationLists.forEach(list => {
+                list.innerHTML = notificationHTML;
+
+                // Add click handlers for notification items in this list
+                list.querySelectorAll('.notification-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        const notificationId = this.getAttribute('data-id');
+                        const link = this.getAttribute('data-link');
+
+                        // Mark as read
+                        fetch(`/api/notifications/${notificationId}/read/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    this.classList.remove('unread');
+                                    loadNotifications(); // Reload to update badge
+
+                                    // Navigate to link if available
+                                    if (link && link !== '#') {
+                                        window.location.href = link;
+                                    }
+                                }
+                            })
+                            .catch(error => console.error('Error marking notification as read:', error));
+                    });
+                });
+            });
+        }
+
+        function updateNotificationBadge(count) {
+            // Update all notification badges (desktop and mobile)
+            const allBadges = document.querySelectorAll('.notification-badge');
+            allBadges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        // Update mark all as read to use API
+        if (markAllRead) {
+            markAllRead.addEventListener('click', function () {
+                fetch('/api/notifications/mark-all-read/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadNotifications(); // Reload notifications
+                        }
+                    })
+                    .catch(error => console.error('Error marking all as read:', error));
+            });
+        }
+
+        // Initialize - load notifications on page load
+        loadNotifications();
+
+        // Auto-refresh notifications every 30 seconds
+        setInterval(loadNotifications, 30000);
+    });
+</script>

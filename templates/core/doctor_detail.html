@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <a href="{% url 'find_doctors' %}"
+        style="color: var(--primary-color); text-decoration: none; font-size: 1rem; display: inline-block; margin-bottom: 20px;">
+        <i class="fas fa-arrow-left"></i> Back to All Doctors
+    </a>
+
+    <div
+        style="background: var(--white); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; max-width: 900px; margin: 0 auto;">
+        <!-- Doctor Header -->
+        <div
+            style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 40px; text-align: center;">
+            {% if doctor.profile_pic %}
+            <img src="{{ doctor.profile_pic.url }}" alt="Dr. {{ doctor.user.get_full_name }}"
+                style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 5px solid white; margin-bottom: 20px;">
+            {% else %}
+            <div
+                style="width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.2); 
+                        display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 5px solid white;">
+                <i class="fas fa-user-md fa-5x" style="color: white;"></i>
+            </div>
+            {% endif %}
+
+            <h1 style="margin: 0 0 10px 0; font-size: 2rem;">Dr.
+                {{doctor.user.get_full_name|default:doctor.user.username }}</h1>
+            <p style="font-size: 1.3rem; margin: 0; opacity: 0.95;"><i class="fas fa-stethoscope"></i>
+                {{doctor.specialization }}</p>
+        </div>
+
+        <!-- Doctor Details -->
+        <div style="padding: 40px;">
+            <h2
+                style="color: var(--primary-color); margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">
+                <i class="fas fa-info-circle"></i> Contact Information
+            </h2>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <div
+                    style="display: flex; align-items: start; background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <i class="fas fa-envelope fa-2x"
+                        style="color: var(--primary-color); margin-right: 20px; width: 40px;"></i>
+                    <div>
+                        <strong style="display: block; margin-bottom: 5px; color: #555;">Email Address</strong>
+                        <a href="mailto:{{ doctor.user.email }}"
+                            style="color: var(--primary-color); text-decoration: none; font-size: 1.1rem;">
+                            {{ doctor.user.email }}
+                        </a>
+                    </div>
+                </div>
+
+                <div
+                    style="display: flex; align-items: start; background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <i class="fas fa-phone fa-2x"
+                        style="color: var(--primary-color); margin-right: 20px; width: 40px;"></i>
+                    <div>
+                        <strong style="display: block; margin-bottom: 5px; color: #555;">Phone Number</strong>
+                        <a href="tel:{{ doctor.phone_number }}"
+                            style="color: var(--primary-color); text-decoration: none; font-size: 1.1rem;">
+                            {{ doctor.phone_number }}
+                        </a>
+                    </div>
+                </div>
+
+                <div
+                    style="display: flex; align-items: start; background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <i class="fas fa-map-marker-alt fa-2x"
+                        style="color: var(--primary-color); margin-right: 20px; width: 40px;"></i>
+                    <div>
+                        <strong style="display: block; margin-bottom: 5px; color: #555;">Address</strong>
+                        <p style="margin: 0; color: #333; font-size: 1.1rem; line-height: 1.6;">{{ doctor.address }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated and user.is_patient %}
+            <div style="text-align: center; padding: 30px; background: var(--light-bg); border-radius: 10px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Ready to book an appointment?</h3>
+                <a href="{% url 'book_appointment' %}" class="btn" style="font-size: 1.1rem; padding: 15px 40px;">
+                    <i class="fas fa-calendar-plus"></i> Book Appointment
+                </a>
+            </div>
+            {% elif not user.is_authenticated %}
+            <div style="text-align: center; padding: 30px; background: var(--light-bg); border-radius: 10px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Want to book an appointment?</h3>
+                <p style="margin-bottom: 20px; color: #666;">Please login or register as a patient to book appointments.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="{% url 'login' %}" class="btn" style="padding: 12px 30px; min-width: 120px;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="{% url 'register_patient' %}" class="btn"
+                        style="background-color: var(--secondary-color); padding: 12px 30px; min-width: 180px;">
+                        <i class="fas fa-user-plus"></i> Register as Patient
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

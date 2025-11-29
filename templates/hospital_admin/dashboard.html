@@ -1,0 +1,827 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="dashboard-title">Admin Dashboard</h2>
+
+    <!-- Pinned Quick Actions - Top Section -->
+    <div class="pinned-section">
+        <h3 class="section-title">
+            <i class="fas fa-thumbtack"></i>
+            Quick Management
+        </h3>
+        <div class="pinned-grid">
+            <a href="{% url 'manage_doctors' %}" class="pinned-card pinned-doctor animate-slide-up" style="animation-delay: 0.1s;">
+                <div class="pinned-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="pinned-content">
+                    <h4>Manage Doctors</h4>
+                    <p>View and manage all doctors</p>
+                    <span class="pinned-stats">{{ total_doctors }} Doctors</span>
+                </div>
+                <div class="pinned-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="{% url 'manage_patients' %}" class="pinned-card pinned-patient animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="pinned-icon">
+                    <i class="fas fa-user-injured"></i>
+                </div>
+                <div class="pinned-content">
+                    <h4>Manage Patients</h4>
+                    <p>View and manage all patients</p>
+                    <span class="pinned-stats">{{ total_patients }} Patients</span>
+                </div>
+                <div class="pinned-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="{% url 'manage_services' %}" class="pinned-card pinned-service animate-slide-up" style="animation-delay: 0.3s;">
+                <div class="pinned-icon">
+                    <i class="fas fa-concierge-bell"></i>
+                </div>
+                <div class="pinned-content">
+                    <h4>Manage Services</h4>
+                    <p>Add or edit hospital services</p>
+                    <span class="pinned-stats">Hospital Services</span>
+                </div>
+                <div class="pinned-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="{% url 'manage_blood_bank' %}" class="pinned-card pinned-blood animate-slide-up" style="animation-delay: 0.4s;">
+                <div class="pinned-icon">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="pinned-content">
+                    <h4>Blood Bank</h4>
+                    <p>Manage inventory & requests</p>
+                    <span class="pinned-stats">Blood Management</span>
+                </div>
+                <div class="pinned-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-section">
+        <h3 class="section-title">
+            <i class="fas fa-chart-line"></i>
+            Overview Statistics
+        </h3>
+        <div class="stats-grid">
+            <div class="stat-card" style="--card-color: var(--secondary-color);">
+                <div class="stat-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h3 class="stat-number" data-count="{{ total_doctors }}">0</h3>
+                <p class="stat-label">Total Doctors</p>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>12% increase</span>
+                </div>
+            </div>
+            <div class="stat-card" style="--card-color: var(--primary-color);">
+                <div class="stat-icon">
+                    <i class="fas fa-user-injured"></i>
+                </div>
+                <h3 class="stat-number" data-count="{{ total_patients }}">0</h3>
+                <p class="stat-label">Total Patients</p>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>8% increase</span>
+                </div>
+            </div>
+            <div class="stat-card" style="--card-color: var(--accent-color);">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="stat-number" data-count="{{ total_appointments }}">0</h3>
+                <p class="stat-label">Total Appointments</p>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>15% increase</span>
+                </div>
+            </div>
+            <div class="stat-card" style="--card-color: #9b59b6;">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="stat-number" data-count="{{ pending_doctors|length }}">0</h3>
+                <p class="stat-label">Pending Approvals</p>
+                <div class="stat-trend urgent">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Attention needed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Approvals -->
+    <div class="approvals-section animate-fade-in" style="animation-delay: 0.5s;">
+        <div class="section-header">
+            <h3><i class="fas fa-clock"></i> Pending Doctor Approvals</h3>
+            <div class="header-actions">
+                <span class="badge">{{ pending_doctors|length }} Pending</span>
+                {% if pending_doctors %}
+                <div class="bulk-actions">
+                    <button class="btn-bulk-approve">
+                        <i class="fas fa-check-double"></i>
+                        Approve All
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if pending_doctors %}
+        <div class="table-container">
+            <table class="approvals-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="select-all" class="select-checkbox">
+                        </th>
+                        <th>Name</th>
+                        <th>Specialization</th>
+                        <th>Email</th>
+                        <th>Registration Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in pending_doctors %}
+                    <tr class="table-row animate-slide-in" style="animation-delay: {{ forloop.counter|add:5|divisibleby:10 }}0ms;">
+                        <td>
+                            <input type="checkbox" class="select-checkbox doctor-checkbox" data-doctor-id="{{ doctor.id }}">
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar">
+                                    {{ doctor.user.get_full_name|slice:":1" }}
+                                </div>
+                                <div class="user-details">
+                                    <strong>{{ doctor.user.get_full_name }}</strong>
+                                    <small>ID: DR{{ doctor.id|stringformat:"04d" }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="specialization-tag">{{ doctor.specialization }}</span>
+                        </td>
+                        <td>{{ doctor.user.email }}</td>
+                        <td>
+                            <span class="date-info">{{ doctor.created_at|date:"M d, Y" }}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'approve_doctor' doctor.id %}" class="btn-approve">
+                                    <i class="fas fa-check"></i> Approve
+                                </a>
+                                <a href="{% url 'reject_doctor' doctor.id %}" class="btn-reject">
+                                    <i class="fas fa-times"></i> Reject
+                                </a>
+                                <button class="btn-view" onclick="viewDoctorDetails({{ doctor.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h4>No Pending Approvals</h4>
+            <p>All doctor applications have been processed.</p>
+            <a href="{% url 'manage_doctors' %}" class="btn action-btn">
+                <i class="fas fa-user-md"></i> View All Doctors
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+
+        body {
+        padding-top: 70px !important;
+    }
+    
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+    }
+    
+    main {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+
+
+
+
+
+
+
+
+    /* Base Styles */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-title {
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Pinned Section */
+    .pinned-section {
+        margin-bottom: 40px;
+    }
+
+    .pinned-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .pinned-card {
+        background: var(--white);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pinned-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, currentColor, transparent);
+        opacity: 0.7;
+    }
+
+    .pinned-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .pinned-doctor { color: var(--secondary-color); }
+    .pinned-patient { color: var(--primary-color); }
+    .pinned-service { color: #f39c12; }
+    .pinned-blood { color: #e74c3c; }
+
+    .pinned-icon {
+        width: 70px;
+        height: 70px;
+        background: currentColor;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .pinned-card:hover .pinned-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .pinned-content {
+        flex-grow: 1;
+    }
+
+    .pinned-content h4 {
+        margin: 0 0 8px 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .pinned-content p {
+        margin: 0 0 10px 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .pinned-stats {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: currentColor;
+    }
+
+    .pinned-arrow {
+        color: currentColor;
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .pinned-card:hover .pinned-arrow {
+        transform: translateX(5px);
+    }
+
+    /* Stats Section */
+    .stats-section {
+        margin-bottom: 40px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+        padding: 30px 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--card-color), transparent);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--card-color), rgba(var(--card-color-rgb), 0.8));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 1.8rem;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--card-color);
+        margin: 10px 0;
+        transition: all 0.3s ease;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 15px 0;
+    }
+
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #27ae60;
+    }
+
+    .stat-trend.urgent {
+        color: #e74c3c;
+    }
+
+    /* Approvals Section */
+    .approvals-section {
+        background: var(--white);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f3f4;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .section-header h3 {
+        color: #2c3e50;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .badge {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .btn-bulk-approve {
+        background: linear-gradient(135deg, #27ae60, #219a52);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-bulk-approve:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid #f1f3f4;
+    }
+
+    .approvals-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .approvals-table th {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 15px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .approvals-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f3f4;
+        transition: background-color 0.2s ease;
+    }
+
+    .table-row:hover td {
+        background-color: #f8f9fa;
+    }
+
+    .select-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color), #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-details small {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
+    .specialization-tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .date-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn-approve, .btn-reject, .btn-view {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-approve {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .btn-approve:hover {
+        background: #c3e6cb;
+        transform: translateY(-1px);
+    }
+
+    .btn-reject {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .btn-reject:hover {
+        background: #f5c6cb;
+        transform: translateY(-1px);
+    }
+
+    .btn-view {
+        background: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #d6d8db;
+    }
+
+    .btn-view:hover {
+        background: #d6d8db;
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h4 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .animate-slide-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .pinned-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .pinned-card {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .approvals-section {
+            padding: 20px;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .header-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
+
+<script>
+    // Animated counter for stats
+    document.addEventListener('DOMContentLoaded', function() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-count'));
+            const duration = 2000; // 2 seconds
+            const step = target / (duration / 16); // 60fps
+            
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                stat.textContent = Math.floor(current);
+            }, 16);
+        });
+
+        // Select all functionality
+        const selectAll = document.getElementById('select-all');
+        const doctorCheckboxes = document.querySelectorAll('.doctor-checkbox');
+        
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                doctorCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+
+        // Bulk approve functionality
+        const bulkApproveBtn = document.querySelector('.btn-bulk-approve');
+        if (bulkApproveBtn) {
+            bulkApproveBtn.addEventListener('click', function() {
+                const selectedDoctors = Array.from(doctorCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.getAttribute('data-doctor-id'));
+                
+                if (selectedDoctors.length === 0) {
+                    alert('Please select at least one doctor to approve.');
+                    return;
+                }
+                
+                if (confirm(`Are you sure you want to approve ${selectedDoctors.length} doctor(s)?`)) {
+                    // Implement bulk approval logic here
+                    selectedDoctors.forEach(doctorId => {
+                        // You would typically make API calls here
+                        console.log(`Approving doctor ${doctorId}`);
+                    });
+                    alert(`${selectedDoctors.length} doctor(s) approved successfully!`);
+                }
+            });
+        }
+    });
+
+    function viewDoctorDetails(doctorId) {
+        // Implement view details functionality
+        alert(`View details for doctor ID: ${doctorId}`);
+    }
+</script>
+{% endblock %}
